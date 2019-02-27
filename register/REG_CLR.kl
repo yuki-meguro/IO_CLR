@@ -1,0 +1,40 @@
+--*- coding: shift-jis -*--
+PROGRAM REG_CLR
+%NOLOCKGROUP
+%SYSTEM
+%NOPAUSE=ERROR+COMMAND+TPENABLE
+%ENVIRONMENT REGOPE
+%COMMENT='Argument'
+
+VAR
+status: INTEGER
+data_type: INTEGER
+counter: INTEGER
+get1_int : INTEGER
+get1_real : REAL
+get1_str : STRING[30]
+get2_int : INTEGER
+get2_real : REAL
+get2_str : STRING[30]
+get3_int : INTEGER
+get3_real : REAL
+get3_str : STRING[30]
+
+BEGIN
+
+GET_TPE_PRM(1, data_type, get1_int, get1_real, get1_str, status)
+GET_TPE_PRM(2, data_type, get2_int, get2_real, get2_str, status)
+GET_TPE_PRM(3, data_type, get3_int, get3_real, get3_str, status)
+
+IF get3_int = 0 THEN
+	FOR counter = get1_int TO get2_int DO
+		SET_INT_REG(counter, 0, status)
+	ENDFOR
+	ELSE IF get3_int = 1 THEN
+		FOR counter = get1_int TO get2_int DO
+			 CLR_POS_REG(counter, 0, status)
+		ENDFOR
+	ENDIF
+ENDIF
+
+END REG_CLR
