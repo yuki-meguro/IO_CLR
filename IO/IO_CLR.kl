@@ -9,30 +9,24 @@ PROGRAM IO_CLR
 VAR
 stat: INTEGER
 data_type: INTEGER
-counter: INTEGER
-get1_int : INTEGER
-get1_real : REAL
-get1_str : STRING[30]
-get2_int : INTEGER
-get2_real : REAL
-get2_str : STRING[30]
-get3_int : INTEGER
-get3_real : REAL
-get3_str : STRING[30]
+i: INTEGER
+get_int: ARRAY[3] OF INTEGER
+get_real: ARRAY[3] OF REAL
+get_str: ARRAY[3] OF STRING[30]
 
 BEGIN
 
-GET_TPE_PRM(1, data_type, get1_int, get1_real, get1_str, stat)
-GET_TPE_PRM(2, data_type, get2_int, get2_real, get2_str, stat)
-GET_TPE_PRM(3, data_type, get3_int, get3_real, get3_str, stat)
+FOR i = 1 to 3 do
+	GET_TPE_PRM(i, data_type, get_int[i], get_real[i], get_str[i], stat)
+ENDFOR
 
-IF get3_int = 0 THEN
-	FOR counter = get1_int TO get2_int DO
-		DOUT[counter] = OFF
+IF get_int[3] = 0 THEN
+	FOR i = get_int[1] TO get_int[2] DO
+		DOUT[i] = OFF
 	ENDFOR
-	ELSE IF get3_int = 1 THEN
-		FOR counter = get1_int TO get2_int DO
-			RDO[counter] = OFF
+	ELSE IF get_int[3] = 1 THEN
+		FOR i = get_int[1] TO get_int[2] DO
+			RDO[i] = OFF
 		ENDFOR
 	ENDIF
 ENDIF
