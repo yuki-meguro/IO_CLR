@@ -17,7 +17,7 @@ get_str: ARRAY[3] OF STRING[30]
 BEGIN
 
 FOR i = 1 to 3 do
-	GET_TPE_PRM(i, data_type, get_int[i], get_real[i], get_str[i], stat)
+	GET_TPE_PRM(i, data_type, get_int[i], get_real[i], get_str[i], status)
 ENDFOR
 
 IF get_int[3] = 0 THEN
