@@ -1,34 +1,93 @@
 --*- coding: shift-jis -*--
+--Released under the Apache 2.0 License.
 PROGRAM IO_CLR
+%ALPHABETIZ
 %NOLOCKGROUP
 %SYSTEM
 %NOPAUSE=ERROR+COMMAND+TPENABLE
 %ENVIRONMENT REGOPE
-%COMMENT='Argument'
+%COMMENT='Clear IO'
 
 VAR
-stat: INTEGER
+status: INTEGER
 data_type: INTEGER
 i: INTEGER
 get_int: ARRAY[3] OF INTEGER
 get_real: ARRAY[3] OF REAL
 get_str: ARRAY[3] OF STRING[30]
+exit_loop: BOOLEAN
+exit_sloop: BOOLEAN
+cin: INTEGER
 
 BEGIN
 
-FOR i = 1 to 3 do
+FOR i = 1 TO 3 DO
 	GET_TPE_PRM(i, data_type, get_int[i], get_real[i], get_str[i], status)
 ENDFOR
 
-IF get_int[3] = 0 THEN
-	FOR i = get_int[1] TO get_int[2] DO
-		DOUT[i] = OFF
-	ENDFOR
-	ELSE IF get_int[3] = 1 THEN
-		FOR i = get_int[1] TO get_int[2] DO
-			RDO[i] = OFF
-		ENDFOR
-	ENDIF
+IF get_int[1] = 0 THEN
+		exit_loop = FALSE
+		REPEAT
+	    WRITE(CHR(137),CHR(128))
+			FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1)
+			WRITE('IO CLEAR', CR)
+			WRITE('Please select mode.', CR)
+			WRITE('DOUT:0, ROUT:1, END:other', CR)
+			READ(get_int[3])
+
+			SELECT get_int[3] OF
+				CASE(0):
+					WRITE('Clear DOUT mode.', CR)
+				CASE(1):
+					WRITE('Clear ROUT mode.', CR)
+				ELSE:
+					WRITE('**Data err**', CR)
+					ABORT
+			ENDSELECT
+
+			exit_sloop = FALSE
+			REPEAT
+				WRITE('Start IO number', CR)
+				READ(get_int[1])
+				WRITE('Stop IO number', CR)
+				READ(get_int[2])
+				IF get_int[1] > get_int[2] THEN
+					WRITE('**Value Err**', CR)
+				ELSE
+					exit_sloop = TRUE
+				ENDIF
+			UNTIL exit_sloop
+
+			IF get_int[3] = 0 THEN
+				WRITE(CR, 'DOUT' , get_int[1] , ' -' , get_int[2] , ' Clear', CR)
+			ELSE
+				WRITE(CR, 'ROUT' , get_int[1] , ' -' , get_int[2] , ' Clear', CR)
+			WRITE('OK? (YES:0, NO:1, Abort:other)', CR)
+			READ(cin)
+			SELECT cin OF
+				CASE(0):
+					exit_loop = TRUE
+				CASE(1):
+					exit_loop = FALSE
+				ELSE:
+					exit_loop = TRUE
+					cin = 4
+			ENDSELECT
+		UNTIL exit_loop
 ENDIF
 
+IF cin = 4 THEN
+	WRITE('**Program Stop**', CR)
+ELSE
+	IF get_int[3] = 0 THEN
+		FOR i = get_int[1] TO get_int[2] DO
+			DOUT[i] = OFF
+		ENDFOR
+		ELSE IF get_int[3] = 1 THEN
+			FOR i = get_int[1] TO get_int[2] DO
+				RDO[i] = OFF
+			ENDFOR
+		ENDIF
+	ENDIF
+ENDIF
 END IO_CLR
