@@ -1,7 +1,7 @@
 --*- coding: shift-jis -*--
 --Released under the Apache 2.0 License.
 PROGRAM IO_CLR
-%ALPHABETIZ
+%ALPHABETIZE
 %NOLOCKGROUP
 %SYSTEM
 %NOPAUSE=ERROR+COMMAND+TPENABLE
@@ -73,7 +73,7 @@ IF get_int[1] = 0 THEN
 					exit_loop = TRUE
 					cin = 4
 			ENDSELECT
-		UNTIL exit_loop
+			UNTIL exit_loop
 ENDIF
 
 IF cin = 4 THEN
