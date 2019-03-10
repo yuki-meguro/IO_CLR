@@ -4,6 +4,7 @@ PROGRAM IO_CLR
 %ALPHABETIZE
 %NOLOCKGROUP
 %SYSTEM
+%NOPAUSESHFT
 %NOPAUSE=ERROR+COMMAND+TPENABLE
 %ENVIRONMENT REGOPE
 %COMMENT='Clear IO'
@@ -41,7 +42,7 @@ IF get_int[1] = 0 THEN
 				CASE(1):
 					WRITE('Clear ROUT mode.', CR)
 				ELSE:
-					WRITE('**Data err**', CR)
+					WRITE('**Program Stop**', CR)
 					ABORT
 			ENDSELECT
 
@@ -62,6 +63,7 @@ IF get_int[1] = 0 THEN
 				WRITE(CR, 'DOUT' , get_int[1] , ' -' , get_int[2] , ' Clear', CR)
 			ELSE
 				WRITE(CR, 'ROUT' , get_int[1] , ' -' , get_int[2] , ' Clear', CR)
+			ENDIF
 			WRITE('OK? (YES:0, NO:1, Abort:other)', CR)
 			READ(cin)
 			SELECT cin OF
