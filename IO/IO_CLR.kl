@@ -9,9 +9,14 @@ PROGRAM IO_CLR
 %ENVIRONMENT REGOPE
 %COMMENT='Clear IO'
 
+CONST
+null = 17042
+
 VAR
 status: INTEGER
+get_stat: ARRAY[3] OF INTEGER
 data_type: INTEGER
+data_box: ARRAY[3] OF INTEGER
 i: INTEGER
 get_int: ARRAY[3] OF INTEGER
 get_real: ARRAY[3] OF REAL
@@ -23,10 +28,16 @@ cin: INTEGER
 BEGIN
 
 FOR i = 1 TO 3 DO
-	GET_TPE_PRM(i, data_type, get_int[i], get_real[i], get_str[i], status)
+	GET_TPE_PRM(i, data_type, get_int[i], get_real[i], get_str[i], get_stat[i])
+	IF ( get_stat[i] = 0 ) AND ( data_type <> 1 ) THEN
+		WRITE(CHR(137),CHR(128))
+		WRITE('PRM[', i, ' ] Err.', CR, '**Program Stop**', CR)
+		FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1)
+		post_err(get_stat[i], '',0,0)
+	ENDIF
 ENDFOR
 
-IF get_int[1] = 0 THEN
+IF get_stat[1] = null THEN
 		exit_loop = FALSE
 		REPEAT
 	    WRITE(CHR(137),CHR(128))
