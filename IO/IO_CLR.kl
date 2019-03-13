@@ -11,6 +11,7 @@ PROGRAM IO_CLR
 
 CONST
 null = 17042
+err_abort = 2
 
 VAR
 status: INTEGER
@@ -29,11 +30,27 @@ BEGIN
 
 FOR i = 1 TO 3 DO
 	GET_TPE_PRM(i, data_type, get_int[i], get_real[i], get_str[i], get_stat[i])
-	IF ( get_stat[i] = 0 ) AND ( data_type <> 1 ) THEN
-		WRITE(CHR(137),CHR(128))
-		WRITE('PRM[', i, ' ] Err.', CR, '**Program Stop**', CR)
-		FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1)
-		post_err(get_stat[i], '',0,0)
+	IF i < 3 THEN
+		IF (get_int[i] < 1) AND (get_stat[i] = 0) THEN
+			WRITE(CHR(137),CHR(128))
+			WRITE('PRM [', i, ' ]  < 1', CR, '**Value Err**', CR)
+			FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1)
+			POST_ERR(status, '', 0, err_abort)
+		ENDIF
+	ENDIF
+	IF (get_stat[i] = 0) AND (data_type <> 1) THEN
+			WRITE(CHR(137),CHR(128))
+			WRITE('PRM [', i, ' ]  Variable Err.', CR, '**Program Stop**', CR)
+			FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1)
+			POST_ERR(status, '', 0, err_abort)
+	ENDIF
+	IF i = 2 THEN
+		IF (get_stat[1] = 0) AND (get_stat[2] = null) THEN
+			WRITE(CHR(137),CHR(128))
+			WRITE('PRM [ 2 ]  = null', CR, '**Program Stop**', CR)
+			FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1)
+			POST_ERR(status, '', 0, err_abort)
+		ENDIF
 	ENDIF
 ENDFOR
 
@@ -42,7 +59,7 @@ IF get_stat[1] = null THEN
 		REPEAT
 	    WRITE(CHR(137),CHR(128))
 			FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1)
-			WRITE('IO CLEAR', CR)
+			WRITE('===IO CLEAR===', CR)
 			WRITE('Please select mode.', CR)
 			WRITE('DOUT:0, ROUT:1, END:other', CR)
 			READ(get_int[3])
@@ -91,6 +108,7 @@ ENDIF
 
 IF cin = 4 THEN
 	WRITE('**Program Stop**', CR)
+	ABORT
 ELSE
 	IF get_int[3] = 0 THEN
 		FOR i = get_int[1] TO get_int[2] DO
