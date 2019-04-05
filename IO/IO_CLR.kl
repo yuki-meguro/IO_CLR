@@ -1,5 +1,19 @@
---*- coding: shift-jis -*--
---Released under the Apache 2.0 License.
+--* coding: Shift-jis *--
+--
+--  --------------------------------------
+--  Released under the Apache 2.0 License.
+--  Yuki Meguro
+--  --------------------------------------
+--
+--  --------------------------------------
+--  Author: Yuki Meguro
+--
+--  Description:
+--    Template Karel File
+--
+--  Dependancies: none
+--  --------------------------------------
+
 PROGRAM IO_CLR
 %ALPHABETIZE
 %NOLOCKGROUP
