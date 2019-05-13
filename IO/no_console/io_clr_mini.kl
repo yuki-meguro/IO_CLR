@@ -1,0 +1,131 @@
+--* coding: Shift-jis *--
+--
+--  --------------------------------------
+--  Released under the Apache 2.0 License.
+--  Yuki Meguro
+--  --------------------------------------
+--
+--  --------------------------------------
+--  Author: Yuki Meguro
+--
+--  Description:
+--    Clear DOUT or FLG
+--
+--  Dependancies: none
+--  --------------------------------------
+
+PROGRAM IO_CLR_MINI
+%ALPHABETIZE
+%NOLOCKGROUP
+%SYSTEM
+%NOPAUSESHFT
+%NOPAUSE=ERROR+COMMAND+TPENABLE
+%ENVIRONMENT REGOPE
+%COMMENT='Clear I/O'
+
+CONST
+null = 17042
+
+ROUTINE force_tp
+BEGIN
+    WRITE(CHR(137),CHR(128))
+    FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1) 
+END force_tp
+
+
+ROUTINE prm_chk(i: INTEGER): INTEGER
+VAR
+    stat,
+    data_type: INTEGER
+    get_int: INTEGER
+    get_real: REAL
+    get_str: STRING[1]
+BEGIN
+    GET_TPE_PRM(i, data_type, get_int, get_real, get_str, stat)
+    IF (i < 3) AND (stat = null) THEN
+        force_tp
+        WRITE('PRM[', i, ' ] is null.', CR, 'Program Abort.', CR)
+        ABORT        
+    ELSE
+        IF (stat = 0) AND (data_type <> 1) THEN
+            IF i < 3 THEN
+                force_tp
+                WRITE('PRM[', i, ' ] Value Err.', CR)
+                ABORT
+            ELSE
+                get_int = 1 --PRM[3]
+            ENDIF
+        ENDIF
+        RETURN(get_int)
+    ENDIF
+END prm_chk
+
+ROUTINE val_chk(start_: INTEGER; stop_: INTEGER): INTEGER
+VAR
+    err_cnt: INTEGER
+BEGIN
+    err_cnt = 0
+
+    IF (start_ = null) OR (stop_ = null) THEN
+        force_tp
+        WRITE('PRM is null.', CR)
+        err_cnt = err_cnt + 1
+    ELSE
+        IF (start_ <= 0) OR (stop_ <= 0) THEN
+            force_tp
+            WRITE('PRM <= 0 Err.', CR)
+            err_cnt = err_cnt + 1
+        ELSE
+            IF start_ > stop_ THEN
+                force_tp
+                WRITE('PRM[1] > PRM[2] Err.', CR)
+                err_cnt = err_cnt + 1
+            ENDIF
+        ENDIF
+    ENDIF
+
+    IF err_cnt = 0 THEN
+        RETURN(0)
+    ELSE
+        RETURN(1)
+    ENDIF
+    
+END val_chk
+
+ROUTINE clr_(start_: INTEGER; stop_: INTEGER; mode_: INTEGER)
+VAR
+    i: INTEGER
+BEGIN
+    FOR i = start_ TO stop_ DO
+        IF mode_ = 0 THEN
+            DOUT[i] = OFF
+        ELSE
+            FLG[i] = OFF
+        ENDIF
+    ENDFOR
+END clr_
+
+ROUTINE main
+VAR
+    stat,
+    i: INTEGER
+    start_,
+    stop_,
+    mode_: INTEGER
+BEGIN
+    start_ = prm_chk(1)
+    stop_ = prm_chk(2)
+    mode_ = prm_chk(3)
+    stat = val_chk(start_, stop_)
+    IF stat = 0 THEN
+        clr_(start_, stop_, mode_)
+    ELSE
+        WRITE('Program Abort.', CR)
+        ABORT
+    ENDIF
+
+END main
+
+BEGIN
+    main
+END IO_CLR_MINI
